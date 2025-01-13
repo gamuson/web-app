@@ -13,4 +13,10 @@ export default defineConfig({
       },
     },
   },
+  build: {
+    outDir: 'dist', // Directorio de salida para producción
+    rollupOptions: {
+      input: './index.html', // Asegúrate de que el punto de entrada sea correcto
+    },
+  },
 });

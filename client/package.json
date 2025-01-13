@@ -3,6 +3,7 @@
     "version": "1.0.0",
     "description": "Frontend para la aplicación web.",
     "scripts": {
+        "dev": "vite",
         "start": "vite",
         "build": "vite build",
         "preview": "vite preview",

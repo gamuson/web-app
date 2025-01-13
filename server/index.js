@@ -8,14 +8,16 @@ const userRoutes = require('./routes/user');
 const adminRoutes = require('./routes/admin');
 
 const app = express();
-const puertoFijo = 5000;
+const puertoFijo = process.env.PORT || 5000;
+
 
 // Middleware para CORS
 app.use(cors({
-  origin: 'http://localhost:5173', // URL del frontend
-  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Métodos permitidos
+  origin: process.env.FRONTEND_URL || 'http://localhost:5173', // FRONTEND_URL será una variable de entorno
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true,
 }));
+
 
 // Middleware para parsear JSON
 app.use(express.json());

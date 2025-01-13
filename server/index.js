@@ -1,4 +1,11 @@
-require('dotenv').config();
+require('dotenv').config({ path: './server/.env' });
+const path = require('path');
+
+// Depuración para verificar que `.env` se carga correctamente
+console.log('Ruta actual:', __dirname); // Muestra la ruta del archivo actual
+console.log('Archivo .env cargado desde:', path.resolve(__dirname, '.env')); // Muestra la ruta donde busca el archivo .env
+console.log('MONGO_URI:', process.env.MONGO_URI); // Verifica si la variable está definida
+
 const express = require('express');
 const connectDB = require('./config/db');
 const cors = require('cors');
@@ -6,6 +13,7 @@ const errorHandler = require('./utils/errorHandler');
 const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/user');
 const adminRoutes = require('./routes/admin');
+const syncDB = require('./utils/syncDB');
 
 const app = express();
 const puertoFijo = process.env.PORT || 5000;
@@ -30,7 +38,7 @@ connectDB()
     console.error('Error al conectar con MongoDB:', error.message);
     process.exit(1);
   });
-
+  syncDB();
 // Logs para todas las solicitudes entrantes
 app.use((req, res, next) => {
   console.log(`${req.method} ${req.originalUrl}`);

@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState } from 'react';
 import { getUserTransactions } from '../services/userService';
 
 const TransactionContext = createContext();
-const logger = require('../logger');
+
 export function TransactionProvider({ children }) {
   const [transactions, setTransactions] = useState([]);
 
@@ -11,9 +11,7 @@ export function TransactionProvider({ children }) {
       const data = await getUserTransactions(token);
       setTransactions(data);
     } catch (error) {
-      
-
-      logger.error(`Error al cargar transacciones: ${error.message}`);
+      console.error(`Error al cargar transacciones: ${error.message}`);
     }
   };
 
@@ -23,8 +21,5 @@ export function TransactionProvider({ children }) {
     </TransactionContext.Provider>
   );
 }
-const contextValue = useMemo(() => ({
-  transactions,
-  loadTransactions,
-}), [transactions]);
+
 export const useTransactions = () => useContext(TransactionContext);

@@ -1,11 +1,5 @@
 require('dotenv').config({ path: './server/.env' });
 const path = require('path');
-
-// Depuración para verificar que `.env` se carga correctamente
-console.log('Ruta actual:', __dirname); // Muestra la ruta del archivo actual
-console.log('Archivo .env cargado desde:', path.resolve(__dirname, '.env')); // Muestra la ruta donde busca el archivo .env
-console.log('MONGO_URI:', process.env.MONGO_URI); // Verifica si la variable está definida
-
 const express = require('express');
 const connectDB = require('./config/db');
 const cors = require('cors');
@@ -14,10 +8,15 @@ const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/user');
 const adminRoutes = require('./routes/admin');
 const syncDB = require('./utils/syncDB');
+const logger = require('./logger');
 
 const app = express();
 const puertoFijo = process.env.PORT || 5000;
 
+// Depuración para verificar que `.env` se carga correctamente
+logger.info('Ruta actual:', __dirname);
+logger.info(`Archivo .env cargado desde: ${path.resolve(__dirname, '.env')}`);
+logger.info(`MONGO_URI: ${process.env.MONGO_URI}`);
 
 // Middleware para CORS
 app.use(cors({
@@ -26,23 +25,31 @@ app.use(cors({
   credentials: true, // Permitir cookies o credenciales
 }));
 
-
-
 // Middleware para parsear JSON
 app.use(express.json());
 
 // Conexión a la base de datos
 connectDB()
-  .then(() => console.log('Conexión a MongoDB Atlas exitosa'))
+  .then(() => logger.info('Conexión a MongoDB Atlas exitosa'))
   .catch((error) => {
-    console.error('Error al conectar con MongoDB:', error.message);
+    logger.error(`Error al conectar con MongoDB: ${error.message}`);
     process.exit(1);
   });
+
+// Sincronización de base de datos (solo en desarrollo)
+if (process.env.NODE_ENV !== 'production') {
   syncDB();
+}
+
 // Logs para todas las solicitudes entrantes
 app.use((req, res, next) => {
-  console.log(`${req.method} ${req.originalUrl}`);
+  logger.info(`${req.method} ${req.originalUrl}`);
   next();
+});
+
+// Ruta raíz para confirmar que el servidor está funcionando
+app.get('/', (req, res) => {
+  res.json({ message: 'Servidor funcionando correctamente' });
 });
 
 // Rutas de API
@@ -55,5 +62,5 @@ app.use(errorHandler);
 
 // Iniciar el servidor
 app.listen(puertoFijo, () => {
-  console.log(`Servidor corriendo en el puerto ${puertoFijo}`);
+  logger.info(`Servidor corriendo en el puerto ${puertoFijo}`);
 });

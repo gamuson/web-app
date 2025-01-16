@@ -1,3 +1,18 @@
+if (!process.env.MONGO_URI) {
+  logger.error('Falta la variable MONGO_URI en el archivo .env');
+  process.exit(1);
+}
+
+if (!process.env.JWT_SECRET) {
+  logger.error('Falta la variable JWT_SECRET en el archivo .env');
+  process.exit(1);
+}
+
+if (!process.env.FRONTEND_URL) {
+  logger.warn('FRONTEND_URL no está definido. Usando http://localhost:5173 como predeterminado.');
+}
+
+
 require('dotenv').config({ path: './server/.env' });
 const path = require('path');
 const express = require('express');
